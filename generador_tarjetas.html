@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="./img/logo_putumayo.svg">
+    <title>Generador de Tarjetas - CTIP Putumayo</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 8mm 10mm;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <div class="header-logo">
+                    <img src="img/image.png" alt="Logo CTIP Putumayo">
+                </div>
+                <div class="header-text">
+                    <h1>Generador de Tarjetas CTIP</h1>
+                    <p class="subtitle">Cooperativa de Transporte Interprovincial "PUTUMAYO"</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="upload-section">
+            <div class="upload-area">
+                <input type="file" id="fileInput" accept=".xlsx,.xls" />
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    📊 Cargar Archivo Excel
+                </button>
+                <p style="margin-top: 1rem; color: #666;">Seleccione el archivo de cuadro de trabajo</p>
+            </div>
+        </div>
+        
+        <div class="config-section" id="configSection" style="display: none;">
+            <h2 style="margin-bottom: 1.5rem; color: var(--primary); font-size: 1.25rem; font-weight: 600;">Configurar Nombres de Socios</h2>
+            
+            <div style="background: #fafbfc; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid var(--border);">
+                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); font-size: 0.9375rem;">
+                    ¿Qué día de la semana es el día 1? *
+                </label>
+                <select id="diaInicio" style="width: 100%; max-width: 300px; padding: 0.625rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9375rem; margin-bottom: 1.5rem; background: white;">
+                    <option value="" selected disabled>Seleccionar día de la semana...</option>
+                    <option value="0">Lunes</option>
+                    <option value="1">Martes</option>
+                    <option value="2">Miércoles</option>
+                    <option value="3">Jueves</option>
+                    <option value="4">Viernes</option>
+                    <option value="5">Sábado</option>
+                    <option value="6">Domingo</option>
+                </select>
+                
+                <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); margin-top: 1rem; font-size: 0.9375rem;">
+                    ¿Cómo desea ordenar las tarjetas? *
+                </label>
+                <select id="ordenDiscos" style="width: 100%; max-width: 300px; padding: 0.625rem 0.75rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9375rem; background: white;">
+                    <option value="" selected disabled>Seleccionar orden de las tarjetas...</option>
+                    <option value="numerico">Orden numérico (1, 2, 3, 4...)</option>
+                    <option value="aparicion">Orden de aparición en el Excel</option>
+                </select>
+            </div>
+            
+            <div id="sociosGrid" class="socios-grid"></div>
+            
+            <div class="actions">
+                <button class="btn btn-primary" onclick="generarTarjetas()">
+                    📋 Generar Tarjetas
+                </button>
+            </div>
+        </div>
+        
+        <div class="preview-section" id="previewSection">
+            <div class="actions">
+                <button class="btn btn-primary" onclick="exportarExcel()">
+                    📥 Descargar Excel
+                </button>
+                <button class="btn btn-secondary" onclick="mostrarModalImpresion()">
+                    🖨️ Imprimir
+                </button>
+            </div>
+            
+            <div class="view-controls">
+                <div class="search-box">
+                    <input type="text" id="searchInput" placeholder="Buscar por nombre o número de disco..." onkeyup="filtrarTarjetas()">
+                </div>
+                
+                <div class="view-toggle">
+                    <button onclick="cambiarVista('todas')" class="active" id="btnVistaTodas">📋 Todas</button>
+                    <button onclick="cambiarVista('individual')" id="btnVistaIndividual">📑 Individual</button>
+                </div>
+            </div>
+            
+            <div class="pagination" id="pagination" style="display: none;">
+                <button onclick="cambiarPagina('prev')">◀ Anterior</button>
+                <span class="page-info" id="pageInfo"></span>
+                <button onclick="cambiarPagina('next')">Siguiente ▶</button>
+            </div>
+            
+            <div id="cardsContainer" class="cards-container"></div>
+            
+            <div class="pagination" id="paginationBottom" style="display: none;">
+                <button onclick="cambiarPagina('prev')">◀ Anterior</button>
+                <span class="page-info" id="pageInfoBottom"></span>
+                <button onclick="cambiarPagina('next')">Siguiente ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botón flotante para volver arriba -->
+    <button id="scrollToTop" title="Volver al inicio">
+        ⬆️
+    </button>
+
+    <script src="script.js"></script>
+</body>
+</html>
